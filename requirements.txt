@@ -1,0 +1,6 @@
+streamlit
+openai
+
+# Optional pinned versions:
+# streamlit==1.26.0
+# openai==0.27.0
