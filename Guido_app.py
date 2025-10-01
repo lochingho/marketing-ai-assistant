@@ -106,7 +106,7 @@ if submitted:
             st.write(strategy)
 
             # Prompt for copies
-            prompt_copy = f\"\"\"Using the strategy above, generate the following { 'in Traditional Chinese' if lang_code == 'zh' else 'in English' } for the brand {brand_name} (Tone: {tone}):\n\n1) 3 short ad copies for Facebook/Instagram (max 90 chars each)\n2) 1 Instagram post caption (80-150 words)\n3) 1 LinkedIn post example (150-300 words)\n\nSeparate sections clearly.\n\"\"\"
+            prompt_copy = f"""Using the strategy above, generate the following { 'in Traditional Chinese' if lang_code == 'zh' else 'in English' } for the brand {brand_name} (Tone: {tone}):\n\n1) 3 short ad copies for Facebook/Instagram (max 90 chars each)\n2) 1 Instagram post caption (80-150 words)\n3) 1 LinkedIn post example (150-300 words)\n\nSeparate sections clearly.\n\"\"\"
 
             try:
                 res_copy = openai.ChatCompletion.create(
