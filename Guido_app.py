@@ -87,7 +87,7 @@ if submitted:
     else:
         with st.spinner(t["processing"]):
             # Prompt for strategy
-            prompt_strategy = f\"\"\"You are an experienced digital marketing consultant. Provide a short actionable marketing recommendation (in { 'Chinese (Traditional)' if lang_code == 'zh' else 'English' }) for the brand below.\n\nBrand name: {brand_name}\nIndustry: {industry}\nProduct/service: {product_service}\nTarget audience: {target_audience}\nBudget level: {budget}\nMarketing goal: {marketing_goal}\n\nOutput (use bullet points):\n1) Recommended platforms and why (1-2 lines each)\n2) Recommended formats (e.g., short video, image post, carousel)\n3) Content direction & visual tone suggestion (50-80 words)\n4) Two short headline ideas (8-16 words)\n\nKeep it concise and directly actionable.\n\"\"\"
+            prompt_strategy = f"""You are an experienced digital marketing consultant. Provide a short actionable marketing recommendation (in { 'Chinese (Traditional)' if lang_code == 'zh' else 'English' }) for the brand below.\n\nBrand name: {brand_name}\nIndustry: {industry}\nProduct/service: {product_service}\nTarget audience: {target_audience}\nBudget level: {budget}\nMarketing goal: {marketing_goal}\n\nOutput (use bullet points):\n1) Recommended platforms and why (1-2 lines each)\n2) Recommended formats (e.g., short video, image post, carousel)\n3) Content direction & visual tone suggestion (50-80 words)\n4) Two short headline ideas (8-16 words)\n\nKeep it concise and directly actionable.\n\"\"\"
 
             # Call OpenAI for strategy
             try:
