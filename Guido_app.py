@@ -24,10 +24,9 @@ TEXT = {
         "strategy": "AI Marketing Recommendations (strategy)",
         "copies": "AI-generated copy",
         "download": "Download full report (.txt)",
-        "example": "Example outputs will appear here after generation.",
         "processing": "Generating — please wait...",
-        "error": "Error calling OpenAI API:",
-        "footer": "Built with ❤️ by Guido — Phase 1 MVP"
+        "footer": "Built with ❤️ by Guido — Phase 1 MVP",
+        "warn_min": "Please enter at least Brand name and Product/Service description."
     },
     "zh": {
         "title": "Guido — AI 行銷助理（MVP）",
@@ -45,10 +44,9 @@ TEXT = {
         "strategy": "AI 行銷建議（策略）",
         "copies": "AI 生成的文案",
         "download": "下載完整報告 (.txt)",
-        "example": "產出會在按下生成後顯示於此。",
-        "processing": "生成中—請稍候...",
-        "error": "呼叫 OpenAI API 發生錯誤：",
-        "footer": "由 Guido 製作 — Phase 1 MVP"
+        "processing": "生成中 — 請稍候...",
+        "footer": "由 Guido 製作 — Phase 1 MVP",
+        "warn_min": "請至少填寫品牌名稱與產品/服務簡介。"
     }
 }
 
@@ -83,50 +81,82 @@ with st.form("onboard", clear_on_submit=False):
 
 if submitted:
     if not brand_name or not product_service:
-        st.warning("Please enter at least Brand name and Product/Service description. / 請至少填寫品牌名稱與產品/服務簡介。")
+        st.warning(t["warn_min"] + " / " + TEXT["en"]["warn_min"])
     else:
         with st.spinner(t["processing"]):
-            # Prompt for strategy
-            prompt_strategy = f"""You are an experienced digital marketing consultant. Provide a short actionable marketing recommendation (in { 'Chinese (Traditional)' if lang_code == 'zh' else 'English' }) for the brand below.\n\nBrand name: {brand_name}\nIndustry: {industry}\nProduct/service: {product_service}\nTarget audience: {target_audience}\nBudget level: {budget}\nMarketing goal: {marketing_goal}\n\nOutput (use bullet points):\n1) Recommended platforms and why (1-2 lines each)\n2) Recommended formats (e.g., short video, image post, carousel)\n3) Content direction & visual tone suggestion (50-80 words)\n4) Two short headline ideas (8-16 words)\n\nKeep it concise and directly actionable.\n\"\"\"
+            # Strategy prompt
+            prompt_strategy = f"""You are an experienced digital marketing consultant. Provide a short actionable marketing recommendation (in {'Chinese (Traditional)' if lang_code == 'zh' else 'English'}) for the brand below.
 
-            # Call OpenAI for strategy
+Brand name: {brand_name}
+Industry: {industry}
+Product/service: {product_service}
+Target audience: {target_audience}
+Budget level: {budget}
+Marketing goal: {marketing_goal}
+
+Output (use bullet points):
+1) Recommended platforms and why (1-2 lines each)
+2) Recommended formats (e.g., short video, image post, carousel)
+3) Content direction & visual tone suggestion (50-80 words)
+4) Two short headline ideas (8-16 words)
+
+Keep it concise and directly actionable.
+"""
+
             try:
                 res_strat = openai.ChatCompletion.create(
-                    model=\"gpt-3.5-turbo\",
-                    messages=[{\"role\": \"user\", \"content\": prompt_strategy}],
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "user", "content": prompt_strategy}],
                     temperature=0.7,
                     max_tokens=600,
                 )
-                strategy = res_strat['choices'][0]['message']['content'].strip()
+                strategy = res_strat["choices"][0]["message"]["content"].strip()
             except Exception as e:
-                st.error(t["error"] + " " + str(e))
+                st.error("OpenAI error: " + str(e))
                 st.stop()
 
             st.subheader(t["strategy"])
             st.write(strategy)
 
-            # Prompt for copies
-            prompt_copy = f"""Using the strategy above, generate the following { 'in Traditional Chinese' if lang_code == 'zh' else 'in English' } for the brand {brand_name} (Tone: {tone}):\n\n1) 3 short ad copies for Facebook/Instagram (max 90 chars each)\n2) 1 Instagram post caption (80-150 words)\n3) 1 LinkedIn post example (150-300 words)\n\nSeparate sections clearly.\n\"\"\"
+            # Copy prompt
+            prompt_copy = f"""Using the strategy above, generate the following {'in Traditional Chinese' if lang_code == 'zh' else 'in English'} for the brand {brand_name} (Tone: {tone}):
+
+1) 3 short ad copies for Facebook/Instagram (max 90 chars each)
+2) 1 Instagram post caption (80-150 words)
+3) 1 LinkedIn post example (150-300 words)
+
+Separate sections clearly.
+"""
 
             try:
                 res_copy = openai.ChatCompletion.create(
-                    model=\"gpt-3.5-turbo\",
-                    messages=[{\"role\": \"user\", \"content\": prompt_copy}],
+                    model="gpt-3.5-turbo",
+                    messages=[{"role": "user", "content": prompt_copy}],
                     temperature=0.75,
                     max_tokens=900,
                 )
-                copies = res_copy['choices'][0]['message']['content'].strip()
+                copies = res_copy["choices"][0]["message"]["content"].strip()
             except Exception as e:
-                st.error(t["error"] + " " + str(e))
+                st.error("OpenAI error: " + str(e))
                 st.stop()
 
             st.subheader(t["copies"])
             st.write(copies)
 
             # Downloadable report (txt)
-            timestamp = datetime.utcnow().strftime(\"%Y%m%d_%H%M%S\")
-            report = f\"Brand: {brand_name}\\nIndustry: {industry}\\nProduct/service: {product_service}\\nTarget audience: {target_audience}\\nBudget: {budget}\\nMarketing goal: {marketing_goal}\\n\\n-- Strategy --\\n{strategy}\\n\\n-- Copies --\\n{copies}\\n\\nGenerated by Guido (MVP) on {timestamp} UTC\\n\"
-            st.download_button(t["download"], data=report, file_name=f\"{brand_name}_Guido_report_{timestamp}.txt\", mime=\"text/plain\")
+            timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+            report = (
+                f"Brand: {brand_name}\n"
+                f"Industry: {industry}\n"
+                f"Product/service: {product_service}\n"
+                f"Target audience: {target_audience}\n"
+                f"Budget: {budget}\n"
+                f"Marketing goal: {marketing_goal}\n\n"
+                f"-- Strategy --\n{strategy}\n\n"
+                f"-- Copies --\n{copies}\n\n"
+                f"Generated by Guido (MVP) on {timestamp} UTC\n"
+            )
+            st.download_button(t["download"], data=report, file_name=f"{brand_name}_Guido_report_{timestamp}.txt", mime="text/plain")
 
-st.markdown(\"---\")
+st.markdown("---")
 st.caption(TEXT[lang_code]["footer"])
